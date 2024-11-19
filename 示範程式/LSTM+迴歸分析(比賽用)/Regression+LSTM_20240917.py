@@ -125,7 +125,7 @@ Regression = joblib.load('WheatherRegression_2024-11-05T10_58_56Z')
 
 
 #載入測試資料
-DataName = os.getcwd()+r'/ExampleTestData/upload.csv'
+DataName = r'/Users/anthony/aiclub/Solar-Energy-Prediction/36_TestSet_SubmissionTemplate/upload(no answer).csv'
 SourceData = pd.read_csv(DataName, encoding='utf-8')
 target = ['序號']
 EXquestion = SourceData[target].values
