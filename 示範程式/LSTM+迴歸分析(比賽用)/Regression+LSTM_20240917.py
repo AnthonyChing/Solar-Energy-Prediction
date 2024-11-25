@@ -17,31 +17,42 @@ import os
 LookBackNum = 12 #LSTM往前看的筆數
 ForecastNum = 48 #預測筆數
 
-#載入訓練資料
-DataName = os.getcwd()+'/ExampleTrainData(AVG)/AvgDATA_17.csv'
-SourceData = pd.read_csv(DataName, encoding='utf-8')
-
-#迴歸分析 選擇要留下來的資料欄位
-#(風速,大氣壓力,溫度,濕度,光照度)
-#(發電量)
-Regression_X_train = SourceData[['WindSpeed(m/s)','Pressure(hpa)','Temperature(°C)','Humidity(%)','Sunlight(Lux)']].values
-Regression_y_train = SourceData[['Power(mW)']].values
-
-#LSTM 選擇要留下來的資料欄位
-#(風速,大氣壓力,溫度,濕度,光照度)
-AllOutPut = SourceData[['WindSpeed(m/s)','Pressure(hpa)','Temperature(°C)','Humidity(%)','Sunlight(Lux)']].values
-
-#正規化
-LSTM_MinMaxModel = MinMaxScaler().fit(AllOutPut)
-AllOutPut_MinMax = LSTM_MinMaxModel.transform(AllOutPut)
-
 X_train = []
 y_train = []
 
-#設定每i-12筆資料(X_train)就對應到第i筆資料(y_train)
-for i in range(LookBackNum,len(AllOutPut_MinMax)):
-  X_train.append(AllOutPut_MinMax[i-LookBackNum:i, :])
-  y_train.append(AllOutPut_MinMax[i, :])
+Regression_X_train = []
+Regression_y_train = []
+
+for station in range(1, 18):
+  if station < 10:
+    station = "0" + str(station)
+  else:
+    station = str(station)
+  #載入訓練資料
+  DataName = os.getcwd()+f'/ExampleTrainData(AVG)/AvgDATA_{station}.csv'
+  SourceData = pd.read_csv(DataName, encoding='utf-8')
+
+  #迴歸分析 選擇要留下來的資料欄位
+  #(風速,大氣壓力,溫度,濕度,光照度)
+  #(發電量)
+  Regression_X_train_buffer = SourceData[['WindSpeed(m/s)','Pressure(hpa)','Temperature(°C)','Humidity(%)','Sunlight(Lux)']].values
+  Regression_X_train.append(Regression_X_train_buffer)
+  Regression_y_train_buffer = SourceData[['Power(mW)']].values
+  Regression_y_train.append(Regression_y_train_buffer)
+
+  #LSTM 選擇要留下來的資料欄位
+  #(風速,大氣壓力,溫度,濕度,光照度)
+  AllOutPut = SourceData[['WindSpeed(m/s)','Pressure(hpa)','Temperature(°C)','Humidity(%)','Sunlight(Lux)']].values
+
+  #正規化
+  LSTM_MinMaxModel = MinMaxScaler().fit(AllOutPut)
+  AllOutPut_MinMax = LSTM_MinMaxModel.transform(AllOutPut)
+
+
+  #設定每i-12筆資料(X_train)就對應到第i筆資料(y_train)
+  for i in range(LookBackNum,len(AllOutPut_MinMax)):
+    X_train.append(AllOutPut_MinMax[i-LookBackNum:i, :])
+    y_train.append(AllOutPut_MinMax[i, :])
 
 
 X_train = np.array(X_train)

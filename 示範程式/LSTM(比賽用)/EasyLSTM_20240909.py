@@ -14,21 +14,26 @@ import os
 LookBackNum = 12 #LSTM往前看的筆數
 ForecastNum = 48 #預測筆數
 
-#載入訓練資料
-DataName = os.getcwd()+'\ExampleTrainData(AVG)\AvgDATA_17.csv'
-SourceData = pd.read_csv(DataName, encoding='utf-8')
+for station in range(1, 18):
+  if station < 10:
+    station = "0" + str(station)
+  else:
+    station = str(station)
+  #載入訓練資料
+  DataName = os.getcwd()+f'\ExampleTrainData(AVG)\AvgDATA_{station}.csv'
+  SourceData = pd.read_csv(DataName, encoding='utf-8')
 
-#選擇要留下來的資料欄位(發電量)
-target = ['Power(mW)']
-AllOutPut = SourceData[target].values
+  #選擇要留下來的資料欄位(發電量)
+  target = ['Power(mW)']
+  AllOutPut = SourceData[target].values
 
-X_train = []
-y_train = []
+  X_train = []
+  y_train = []
 
-#設定每i-12筆資料(X_train)就對應到第i筆資料(y_train)
-for i in range(LookBackNum,len(AllOutPut)):
-  X_train.append(AllOutPut[i-LookBackNum:i, 0])
-  y_train.append(AllOutPut[i, 0])
+  #設定每i-12筆資料(X_train)就對應到第i筆資料(y_train)
+  for i in range(LookBackNum,len(AllOutPut)):
+    X_train.append(AllOutPut[i-LookBackNum:i, 0])
+    y_train.append(AllOutPut[i, 0])
 
 X_train = np.array(X_train)
 y_train = np.array(y_train)
