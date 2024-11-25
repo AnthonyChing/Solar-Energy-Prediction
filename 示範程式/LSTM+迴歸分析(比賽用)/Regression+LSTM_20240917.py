@@ -20,8 +20,8 @@ ForecastNum = 48 #預測筆數
 X_train = []
 y_train = []
 
-Regression_X_train = []
-Regression_y_train = []
+Regression_X_train = np.array([])
+Regression_y_train = np.array([])
 
 for station in range(1, 18):
   if station < 10:
@@ -36,9 +36,11 @@ for station in range(1, 18):
   #(風速,大氣壓力,溫度,濕度,光照度)
   #(發電量)
   Regression_X_train_buffer = SourceData[['WindSpeed(m/s)','Pressure(hpa)','Temperature(°C)','Humidity(%)','Sunlight(Lux)']].values
-  Regression_X_train.append(Regression_X_train_buffer)
+  Regression_X_train_buffer = np.reshape(np.array(Regression_X_train_buffer), -1)
+  Regression_X_train = np.append(Regression_X_train, Regression_X_train_buffer)
   Regression_y_train_buffer = SourceData[['Power(mW)']].values
-  Regression_y_train.append(Regression_y_train_buffer)
+  Regression_y_train_buffer = np.reshape(np.array(Regression_y_train_buffer), -1)
+  Regression_y_train = np.append(Regression_y_train, Regression_y_train_buffer)
 
   #LSTM 選擇要留下來的資料欄位
   #(風速,大氣壓力,溫度,濕度,光照度)
@@ -54,14 +56,16 @@ for station in range(1, 18):
     X_train.append(AllOutPut_MinMax[i-LookBackNum:i, :])
     y_train.append(AllOutPut_MinMax[i, :])
 
-
+Regression_X_train = np.array(Regression_X_train)
+Regression_y_train = np.array(Regression_y_train)
 X_train = np.array(X_train)
 y_train = np.array(y_train)
 
 # Reshaping
 #(samples 是訓練樣本數量,timesteps 是每個樣本的時間步長,features 是每個時間步的特徵數量)
 X_train = np.reshape(X_train,(X_train.shape [0], X_train.shape [1], 5))
-
+Regression_X_train = np.reshape(Regression_X_train, (-1, 5))
+print(Regression_X_train)
 
 
 
@@ -131,8 +135,8 @@ print('R squared: ',RegressionModel.score(LSTM_MinMaxModel.transform(Regression_
 #%%
 #============================預測數據============================
 #載入模型
-regressor = load_model('WheatherLSTM_2024-11-05T10_58_41Z.h5')
-Regression = joblib.load('WheatherRegression_2024-11-05T10_58_56Z')
+regressor = load_model('WheatherLSTM_2024-11-25T23_53_07Z.h5')
+Regression = joblib.load('WheatherRegression_2024-11-26T00_22_42Z')
 
 
 #載入測試資料

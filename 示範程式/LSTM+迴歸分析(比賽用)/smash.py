@@ -1,6 +1,6 @@
 f = open('output.csv', 'r')
 g = open('/Users/anthony/aiclub/Solar-Energy-Prediction/36_TestSet_SubmissionTemplate/upload(no answer).csv', 'r')
-h = open('upload-baseline.csv', 'w')
+h = open('upload-all.csv', 'w')
 
 lines = ["序號,答案\n"]
 
